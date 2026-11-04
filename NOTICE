@@ -1,0 +1,12 @@
+Anki Automation is distributed under GPL-3.0-or-later. See LICENSE.
+
+The original project files were distributed under the MIT license.
+Copyright (c) 2026 Nikita Pochaev. The original notice is kept in LICENSES/MIT.txt.
+
+The unmodified Anki-Connect API v1 schema is included in
+src/anki_automation/resources/api-v1.schema.json. The request examples in
+tests/fixtures/anki-v1-requests.json are extracted from API_V1.md at the same
+upstream revision.
+Copyright 2016-2026 Alex Yatskov. License: GPL-3.0-or-later.
+See LICENSES/AnkiConnect.txt and the adjacent provenance.json for the source
+revision and SHA-256 digest.

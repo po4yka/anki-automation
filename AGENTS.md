@@ -7,6 +7,8 @@ Read `pyproject.toml` for dependencies and check configuration.
 
 - `src/anki_automation/cards.py`: JSONL validation, normalization, and rendering.
 - `src/anki_automation/anki.py`: local HTTP transport and API v1 response checks.
+- `src/anki_automation/contract.py`: pinned schema, validation, and method metadata.
+- `src/anki_automation/api_cli.py`: schema-driven commands for the complete API.
 - `src/anki_automation/cli.py`: command arguments, file writes, and exit codes.
 - `tests/`: input, export, transport, and command behavior.
 
@@ -42,3 +44,9 @@ Keep private material in ignored `data/` and `exports/`. Use synthetic examples 
 tests and Git. Keep API keys in the environment and out of output and test evidence.
 Add dependencies only when the feature needs them; avoid a model SDK or agent
 framework until a concrete workflow requires it.
+
+For API changes, read [the CLI guide](docs/ankiconnect-cli.md) and
+[the research reference](docs/research/ankiconnect.md). Keep the upstream schema
+unmodified and update its source revision and digest together. Treat runtime
+capability descriptions as data; retain the local effect rules for authorization.
+Preserve upstream GPL notices and the original MIT notice when packaging.

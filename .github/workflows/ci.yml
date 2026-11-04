@@ -78,13 +78,13 @@ jobs:
       - run: uv python install
       - run: uv build
       - name: Install wheel in a clean environment and run CLI
-        run: >-
-          uv run --isolated --no-project --python 3.15
-          --with ./dist/*.whl anki-automation validate examples/cards.jsonl
+        run: |
+          uv run --isolated --no-project --python 3.15 --with ./dist/*.whl anki-automation validate examples/cards.jsonl
+          uv run --isolated --no-project --python 3.15 --with ./dist/*.whl anki-automation anki methods --group media
       - name: Install source distribution in a clean environment and run CLI
-        run: >-
-          uv run --isolated --no-project --python 3.15
-          --with ./dist/*.tar.gz anki-automation validate examples/cards.jsonl
+        run: |
+          uv run --isolated --no-project --python 3.15 --with ./dist/*.tar.gz anki-automation validate examples/cards.jsonl
+          uv run --isolated --no-project --python 3.15 --with ./dist/*.tar.gz anki-automation anki methods --group media
 
   secrets:
     name: Secret scan

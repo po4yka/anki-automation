@@ -4,14 +4,14 @@ build-backend = "uv_build"
 
 [project]
 name = "anki-automation"
-version = "0.1.0"
+version = "0.2.0"
 description = "Prepare checked language-learning notes and import them into Anki."
 readme = "README.md"
 requires-python = ">=3.15,<3.16"
-license = "MIT"
-license-files = ["LICENSE"]
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE", "LICENSES/*.txt", "NOTICE"]
 authors = [{ name = "po4yka" }]
-dependencies = []
+dependencies = ["jsonschema>=4.26.0,<5"]
 
 [project.urls]
 Repository = "https://github.com/po4yka/anki-automation"

@@ -2,7 +2,8 @@
 
 Python tools to prepare language-learning notes from reviewed source records.
 Validate JSONL, export an Anki TSV file, or import notes through Anki-Connect API v1.
-The application uses the Python standard library. It has no runtime dependencies.
+The client supports all 96 methods in the pinned Anki-Connect API v1 schema.
+It uses standard-library HTTP and `jsonschema` for contract checks.
 
 ## Start
 
@@ -53,6 +54,25 @@ you import them. This initial version does not generate translations, call a mod
 extract PDF or web content, or download audio.
 
 ## Anki-Connect
+
+The complete API is available through `anki`:
+
+```sh
+uv run --locked anki-automation anki methods
+uv run --locked anki-automation anki methods --live
+uv run --locked anki-automation anki schema notes.create
+uv run --locked anki-automation anki decks.list
+uv run --locked anki-automation anki notes.search --query 'deck:Languages' --all-pages
+uv run --locked anki-automation anki decks.create --name 'Languages::English'
+```
+
+Reads execute by default. Methods with other effects show a preview until
+`--apply` is supplied. Use `--dry-run` to preview a read. Every method has its own
+parameter flags and help. See the [CLI and Python guide](docs/ankiconnect-cli.md)
+for JSON input, operation waiting, pagination, bulk errors, and API examples.
+The [research reference](docs/research/ankiconnect.md) lists all methods and links
+to the pinned primary sources. `methods --live` shows which methods the running
+add-on supports; the packaged catalog can be newer than the installed add-on.
 
 Use Anki Desktop **26.08 or later** and a current
 [Anki-Connect](https://git.sr.ht/~foosoft/anki-connect) add-on with API v1.
@@ -118,4 +138,5 @@ publish packages or import notes. Read [AGENTS.md](AGENTS.md) before agent work.
 - [Anki text import](https://docs.ankiweb.net/manual/importing/text-files)
 - [Anki-Connect API v1](https://git.sr.ht/~foosoft/anki-connect/blob/master/API_V1.md)
 
-MIT license. See [LICENSE](LICENSE).
+GPL-3.0-or-later. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+The original MIT notice is kept in [LICENSES/MIT.txt](LICENSES/MIT.txt).

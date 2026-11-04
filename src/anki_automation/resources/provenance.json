@@ -1,0 +1,8 @@
+{
+  "project": "Anki-Connect",
+  "revision": "c577b44aaadbd72dbc22c823f874a126213fe5c5",
+  "source": "https://git.sr.ht/~foosoft/anki-connect/blob/c577b44aaadbd72dbc22c823f874a126213fe5c5/api-v1.schema.json",
+  "sha256": "784dda7d6b273346cc8431679cb7a8ec15e3c8e0c0bbda05df42aec6f1a68896",
+  "license": "GPL-3.0-or-later",
+  "checked_at": "2026-11-04"
+}

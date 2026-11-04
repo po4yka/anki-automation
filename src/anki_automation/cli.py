@@ -9,7 +9,10 @@ from importlib.metadata import version
 from pathlib import Path
 
 from anki_automation.anki import AnkiClient, AnkiError
+from anki_automation.api_cli import add_api_parser, run_api
 from anki_automation.cards import CardError, import_params, load_cards, render_tsv
+from anki_automation.contract import ContractError
+from anki_automation.errors import OperationTimeout
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -32,6 +35,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     anki.add_argument("--port", type=int, default=8765)
     anki.add_argument("--timeout", type=float, default=10.0)
+    add_api_parser(commands)
     return parser
 
 
@@ -39,7 +43,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     """Return zero only after validation, export, preview, or confirmed import."""
     args = _parser().parse_args(argv)
     try:
-        cards = load_cards(args.input)
+        cards = load_cards(args.input) if args.command != "anki" else []
         match args.command:
             case "validate":
                 result = {"cards": len(cards)}
@@ -59,10 +63,13 @@ def main(argv: Sequence[str] | None = None) -> int:
                     result = {"created": len(ids), "note_ids": ids}
                 else:
                     result = {"apply": False, "method": "notes.createMany", "params": params}
+            case "anki":
+                result = run_api(args)
             case _:
                 raise AssertionError("argparse accepted an unknown command")
-    except (CardError, AnkiError, OSError, UnicodeError) as error:
-        print(json.dumps({"error": str(error)}, ensure_ascii=True), file=sys.stderr)
-        return 1
+    except (CardError, ContractError, AnkiError, OSError, UnicodeError) as error:
+        details = error.as_dict() if isinstance(error, AnkiError) else {"error": str(error)}
+        print(json.dumps(details, ensure_ascii=True), file=sys.stderr)
+        return 3 if isinstance(error, OperationTimeout) else 1
     print(json.dumps(result, ensure_ascii=False))
     return 0

@@ -1,29 +1,32 @@
 """Exercise API v1 over a real local HTTP transport, without an Anki collection."""
 
+import gc
 import json
 import threading
 from collections.abc import Generator, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from typing import Any
 
 import pytest
 
 from anki_automation.anki import AnkiClient, AnkiError
 from anki_automation.cards import card_from_record, import_params
+from tests.network import OWNED_PORTS
 
 
 @dataclass
 class Server:
     port: int
-    requests: list[dict[str, object]]
+    requests: list[dict[str, Any]]
     authorizations: list[str | None]
     paths: list[str]
 
 
 @contextmanager
 def rpc_server(replies: Sequence[object], *, status: int = 200) -> Generator[Server]:
-    requests: list[dict[str, object]] = []
+    requests: list[dict[str, Any]] = []
     authorizations: list[str | None] = []
     paths: list[str] = []
 
@@ -45,6 +48,7 @@ def rpc_server(replies: Sequence[object], *, status: int = 200) -> Generator[Ser
             pass
 
     with ThreadingHTTPServer(("127.0.0.1", 0), Handler) as httpd:
+        OWNED_PORTS.add(httpd.server_port)
         thread = threading.Thread(target=httpd.serve_forever, kwargs={"poll_interval": 0.01})
         thread.start()
         try:
@@ -58,11 +62,25 @@ def success(request_id: int, result: object) -> dict[str, object]:
     return {"jsonrpc": "2.0", "id": request_id, "result": result}
 
 
+def collection(session: str = "s") -> dict[str, object]:
+    return {"profile": "Protocol test", "session": session, "scheduler": "fsrs"}
+
+
+def note_params(count: int = 1) -> dict[str, object]:
+    return import_params(
+        [
+            card_from_record({"term": f"term {index}", "meaning": "test meaning"})
+            for index in range(count)
+        ],
+        "Test",
+    )
+
+
 def test_atomic_import_pins_session_and_orders_results() -> None:
     card = card_from_record({"term": "café", "meaning": "кафе"})
     params = import_params([card, card], "Languages::English")
     replies = [
-        success(1, {"session": "collection-session"}),
+        success(1, collection("collection-session")),
         success(
             2,
             {
@@ -119,7 +137,9 @@ def test_report_structured_api_error_without_retry() -> None:
     }
     with rpc_server([reply]) as server:
         with pytest.raises(AnkiError, match="1002: Duplicate note"):
-            AnkiClient(port=server.port).call("notes.createMany", {"atomic": True, "notes": []})
+            AnkiClient(port=server.port).call(
+                "notes.createMany", {"atomic": True, "notes": [], "session": "s"}, apply=True
+            )
         assert len(server.requests) == 1
 
 
@@ -129,13 +149,14 @@ def test_http_status_is_checked_before_json(status: int) -> None:
         with pytest.raises(AnkiError, match=f"HTTP {status}"):
             AnkiClient(port=server.port).call("collection.get")
         assert len(server.requests) == 1
+        gc.collect()
 
 
 @pytest.mark.parametrize("collection", [None, {}, {"session": 1}, {"session": ""}])
 def test_invalid_session_stops_before_write(collection: object) -> None:
     with rpc_server([success(1, collection)]) as server:
-        with pytest.raises(AnkiError, match="session"):
-            AnkiClient(port=server.port).create_notes({}, 1)
+        with pytest.raises(AnkiError, match=r"collection\.get result"):
+            AnkiClient(port=server.port).create_notes(note_params(), 1)
         assert len(server.requests) == 1
 
 
@@ -155,19 +176,19 @@ def test_invalid_session_stops_before_write(collection: object) -> None:
     ],
 )
 def test_unconfirmed_import_does_not_report_success(result: object) -> None:
-    with rpc_server([success(1, {"session": "s"}), success(2, result)]) as server:
+    with rpc_server([success(1, collection()), success(2, result)]) as server:
         with pytest.raises(AnkiError, match="inspect Anki"):
-            AnkiClient(port=server.port).create_notes({}, 1)
+            AnkiClient(port=server.port).create_notes(note_params(), 1)
         assert len(server.requests) == 2
 
 
 def test_reject_repeated_indexes() -> None:
-    item = {"index": 0, "result": {"noteId": "1"}}
+    item = {"index": 0, "result": {"noteId": "1", "cardIds": ["2"]}}
     with (
-        rpc_server([success(1, {"session": "s"}), success(2, {"items": [item, item]})]) as server,
+        rpc_server([success(1, collection()), success(2, {"items": [item, item]})]) as server,
         pytest.raises(AnkiError, match="unconfirmed import item"),
     ):
-        AnkiClient(port=server.port).create_notes({}, 2)
+        AnkiClient(port=server.port).create_notes(note_params(2), 2)
 
 
 @pytest.mark.parametrize("port", [0, -1, 65536])
@@ -190,7 +211,7 @@ def test_reject_header_injection() -> None:
 def test_request_and_response_limits(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("anki_automation.anki.MAX_BODY_BYTES", 150)
     with pytest.raises(AnkiError, match="request exceeds"):
-        AnkiClient().call("notes.createMany", {"large": "x" * 200})
+        AnkiClient().call("notes.search", {"query": "x" * 200})
     with (
         rpc_server([b"x" * 151]) as server,
         pytest.raises(AnkiError, match="response exceeds"),
@@ -201,5 +222,5 @@ def test_request_and_response_limits(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_closed_listener_is_a_transport_error() -> None:
     with rpc_server([]) as server:
         port = server.port
-    with pytest.raises(AnkiError, match="outcome is unknown"):
-        AnkiClient(port=port, timeout=0.1).call("notes.createMany")
+    with pytest.raises(AnkiError, match="unknown outcome"):
+        AnkiClient(port=port, timeout=0.1).call("collection.get")

@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from anki_automation.cli import main
-from tests.test_anki import rpc_server, success
+from tests.test_anki import collection, rpc_server, success
 
 
 @pytest.fixture
@@ -57,7 +57,7 @@ def test_preview_has_no_network_or_credentials(
 
 def test_explicit_apply(source: Path, capsys: pytest.CaptureFixture[str]) -> None:
     replies = [
-        success(1, {"session": "s"}),
+        success(1, collection()),
         success(2, {"items": [{"index": 0, "result": {"noteId": "123", "cardIds": ["456"]}}]}),
     ]
     with rpc_server(replies) as server:
@@ -132,7 +132,7 @@ def test_module_entry_point() -> None:
         check=False,
     )
     assert result.returncode == 0, result.stderr
-    assert result.stdout.strip() == "0.1.0"
+    assert result.stdout.strip() == "0.2.0"
 
 
 def test_help(capsys: pytest.CaptureFixture[str]) -> None:

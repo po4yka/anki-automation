@@ -1,0 +1,557 @@
+{
+  "api.describe": {},
+  "api.execute": {
+    "commands": [
+      {
+        "method": "decks.create",
+        "params": {
+          "name": "Vocabulary"
+        }
+      },
+      {
+        "method": "decks.list",
+        "params": {}
+      }
+    ]
+  },
+  "access.requestPermission": {},
+  "profiles.list": {},
+  "profiles.getActive": {},
+  "profiles.switch": {
+    "name": "User 1"
+  },
+  "collection.get": {},
+  "collection.sync": {},
+  "collection.refresh": {},
+  "collection.checkIntegrity": {},
+  "collection.undo": {},
+  "notes.get": {
+    "id": "1700000000001"
+  },
+  "notes.getMany": {
+    "ids": [
+      "1700000000001"
+    ]
+  },
+  "notes.search": {
+    "query": "deck:Default"
+  },
+  "notes.validate": {
+    "note": {
+      "noteType": {
+        "name": "Basic"
+      },
+      "deck": {
+        "name": "Default"
+      },
+      "fields": {
+        "Front": "cat",
+        "Back": "猫"
+      },
+      "tags": [
+        "vocabulary"
+      ]
+    }
+  },
+  "notes.validateMany": {
+    "notes": [
+      {
+        "noteType": {
+          "name": "Basic"
+        },
+        "deck": {
+          "name": "Default"
+        },
+        "fields": {
+          "Front": "cat",
+          "Back": "猫"
+        },
+        "tags": [
+          "vocabulary"
+        ]
+      }
+    ]
+  },
+  "notes.create": {
+    "noteType": {
+      "name": "Basic"
+    },
+    "deck": {
+      "name": "Default"
+    },
+    "fields": {
+      "Front": "cat",
+      "Back": "猫"
+    },
+    "tags": [
+      "vocabulary"
+    ]
+  },
+  "notes.createMany": {
+    "notes": [
+      {
+        "noteType": {
+          "name": "Basic"
+        },
+        "deck": {
+          "name": "Default"
+        },
+        "fields": {
+          "Front": "cat",
+          "Back": "猫"
+        },
+        "tags": [
+          "vocabulary"
+        ]
+      }
+    ],
+    "atomic": true
+  },
+  "notes.update": {
+    "id": "1700000000001",
+    "patch": {
+      "fields": {
+        "Back": "猫 (cat)"
+      },
+      "tags": [
+        "vocabulary",
+        "animals"
+      ]
+    }
+  },
+  "notes.delete": {
+    "ids": [
+      "1700000000001"
+    ]
+  },
+  "notes.planConversion": {
+    "source": {
+      "name": "Basic"
+    },
+    "target": {
+      "name": "Basic (and reversed card)"
+    }
+  },
+  "notes.convert": {
+    "ids": [
+      "1700000000001"
+    ],
+    "target": {
+      "name": "Basic (and reversed card)"
+    },
+    "fields": [
+      {
+        "target": "Front",
+        "source": "Front"
+      },
+      {
+        "target": "Back",
+        "source": "Back"
+      }
+    ],
+    "templates": [
+      {
+        "target": "Card 1",
+        "source": "Card 1"
+      },
+      {
+        "target": "Card 2",
+        "source": null
+      }
+    ],
+    "planToken": "replace-with-conversion-plan-token"
+  },
+  "notes.findEmpty": {
+    "criterion": "noCards",
+    "limit": 100
+  },
+  "tags.list": {},
+  "tags.add": {
+    "noteIds": [
+      "1700000000001"
+    ],
+    "tags": [
+      "animals"
+    ]
+  },
+  "tags.remove": {
+    "noteIds": [
+      "1700000000001"
+    ],
+    "tags": [
+      "animals"
+    ]
+  },
+  "tags.replace": {
+    "from": "animals",
+    "to": "vocabulary::animals",
+    "noteIds": [
+      "1700000000001"
+    ]
+  },
+  "tags.deleteUnused": {},
+  "cards.get": {
+    "id": "1700000000002"
+  },
+  "cards.getMany": {
+    "ids": [
+      "1700000000002"
+    ]
+  },
+  "cards.search": {
+    "query": "deck:Default"
+  },
+  "cards.render": {
+    "id": "1700000000002"
+  },
+  "cards.move": {
+    "ids": [
+      "1700000000002"
+    ],
+    "deck": {
+      "name": "Default"
+    }
+  },
+  "cards.setSuspended": {
+    "ids": [
+      "1700000000002"
+    ],
+    "suspended": true
+  },
+  "cards.setFlags": {
+    "ids": [
+      "1700000000002"
+    ],
+    "flag": 1
+  },
+  "scheduling.get": {
+    "cardId": "1700000000002"
+  },
+  "scheduling.getQueue": {
+    "fetchLimit": 2
+  },
+  "scheduling.predict": {
+    "cardId": "1700000000002"
+  },
+  "scheduling.getDue": {
+    "cardId": "1700000000002"
+  },
+  "scheduling.answer": {
+    "cardId": "1700000000002",
+    "rating": "good",
+    "stateToken": "replace-with-prediction-state-token",
+    "elapsedMs": 2500
+  },
+  "scheduling.answerMany": {
+    "answers": [
+      {
+        "cardId": "1700000000002",
+        "rating": "good",
+        "stateToken": "replace-with-prediction-state-token",
+        "elapsedMs": 2500
+      }
+    ]
+  },
+  "scheduling.repositionNewCards": {
+    "cardIds": [
+      "1700000000002"
+    ],
+    "startingFrom": 0,
+    "stepSize": 1,
+    "randomize": false,
+    "shiftExisting": false
+  },
+  "scheduling.reset": {
+    "cardIds": [
+      "1700000000002"
+    ]
+  },
+  "scheduling.setDueDate": {
+    "cardIds": [
+      "1700000000002"
+    ],
+    "days": "3"
+  },
+  "decks.list": {},
+  "decks.get": {
+    "deck": {
+      "name": "Default"
+    }
+  },
+  "decks.create": {
+    "name": "Vocabulary"
+  },
+  "decks.update": {
+    "deck": {
+      "name": "Vocabulary"
+    },
+    "name": "Languages::Vocabulary"
+  },
+  "decks.delete": {
+    "decks": [
+      {
+        "name": "Unused deck"
+      }
+    ],
+    "deleteCards": true
+  },
+  "decks.getCounts": {
+    "deck": {
+      "name": "Default"
+    }
+  },
+  "deckPresets.list": {},
+  "deckPresets.get": {
+    "preset": {
+      "id": "1"
+    }
+  },
+  "deckPresets.create": {
+    "name": "Vocabulary",
+    "cloneFrom": {
+      "id": "1"
+    }
+  },
+  "deckPresets.update": {
+    "preset": {
+      "id": "1"
+    },
+    "settings": {
+      "newPerDay": 20,
+      "newPerDayMinimum": 10
+    }
+  },
+  "deckPresets.assign": {
+    "decks": [
+      {
+        "name": "Vocabulary"
+      }
+    ],
+    "preset": {
+      "name": "Vocabulary"
+    }
+  },
+  "deckPresets.delete": {
+    "preset": {
+      "name": "Unused preset"
+    },
+    "replacement": {
+      "id": "1"
+    }
+  },
+  "noteTypes.list": {},
+  "noteTypes.get": {
+    "noteType": {
+      "name": "Basic"
+    }
+  },
+  "noteTypes.create": {
+    "name": "Vocabulary",
+    "fields": [
+      {
+        "name": "Front"
+      },
+      {
+        "name": "Back"
+      }
+    ],
+    "templates": [
+      {
+        "name": "Card 1",
+        "questionHtml": "{{Front}}",
+        "answerHtml": "{{FrontSide}}<hr id=\"answer\">{{Back}}"
+      }
+    ],
+    "css": ".card { font-family: Arial; font-size: 20px; }"
+  },
+  "noteTypes.update": {
+    "noteType": {
+      "name": "Basic"
+    },
+    "patch": {
+      "css": ".card { font-size: 24px; }"
+    }
+  },
+  "noteTypes.editStructure": {
+    "noteType": {
+      "name": "Basic"
+    },
+    "edits": [
+      {
+        "op": "addField",
+        "field": {
+          "name": "Source"
+        }
+      }
+    ]
+  },
+  "noteTypes.getTemplateUsage": {
+    "noteType": {
+      "name": "Basic"
+    }
+  },
+  "noteTypes.replaceText": {
+    "find": "font-size: 20px",
+    "replace": "font-size: 24px",
+    "noteTypes": [
+      {
+        "name": "Basic"
+      }
+    ],
+    "targets": [
+      "css"
+    ]
+  },
+  "noteTypes.deleteUnused": {
+    "noteTypes": [
+      {
+        "name": "Unused note type"
+      }
+    ]
+  },
+  "media.store": {
+    "filename": "hello.txt",
+    "source": {
+      "data": "SGVsbG8h"
+    },
+    "collision": "rename"
+  },
+  "media.get": {
+    "filename": "hello.txt"
+  },
+  "media.list": {
+    "pattern": "*.png"
+  },
+  "media.delete": {
+    "filename": "hello.txt"
+  },
+  "media.getDirectory": {},
+  "reviews.list": {
+    "cardIds": [
+      "1700000000002"
+    ],
+    "limit": 100
+  },
+  "reviews.getLatestId": {
+    "cardIds": [
+      "1700000000002"
+    ]
+  },
+  "statistics.getToday": {},
+  "statistics.getReviewDays": {},
+  "statistics.getSummary": {},
+  "statistics.getHtml": {},
+  "packages.import": {
+    "path": "C:/Users/Alex/Downloads/vocabulary.apkg"
+  },
+  "packages.export": {
+    "deck": {
+      "name": "Default"
+    },
+    "path": "C:/Users/Alex/Desktop/default.apkg"
+  },
+  "browser.open": {
+    "query": "deck:Default",
+    "sort": {
+      "column": "noteFld",
+      "direction": "ascending"
+    }
+  },
+  "browser.getSelection": {},
+  "browser.select": {
+    "cardIds": [
+      "1700000000002"
+    ]
+  },
+  "editors.openNote": {
+    "noteId": "1700000000001"
+  },
+  "editors.openAdd": {
+    "note": {
+      "noteType": {
+        "name": "Basic"
+      },
+      "deck": {
+        "name": "Default"
+      },
+      "fields": {
+        "Front": "cat",
+        "Back": "猫"
+      },
+      "tags": [
+        "vocabulary"
+      ]
+    }
+  },
+  "editors.updateDraft": {
+    "editorId": "replace-with-editor-id",
+    "patch": {
+      "fields": {
+        "Back": "猫 (cat)"
+      }
+    },
+    "mode": "replace"
+  },
+  "reviewer.get": {},
+  "reviewer.startTimer": {
+    "stateToken": "replace-with-current-state-token"
+  },
+  "reviewer.showQuestion": {
+    "stateToken": "replace-with-current-state-token"
+  },
+  "reviewer.showAnswer": {
+    "stateToken": "replace-with-current-state-token"
+  },
+  "reviewer.answer": {
+    "stateToken": "replace-with-reviewer-state-token",
+    "rating": "good"
+  },
+  "reviewer.playAudio": {
+    "stateToken": "replace-with-current-state-token"
+  },
+  "application.navigate": {
+    "view": "deckOverview",
+    "deck": {
+      "name": "Default"
+    }
+  },
+  "application.importFile": {
+    "path": "C:/Users/Alex/Downloads/vocabulary.csv"
+  },
+  "application.exit": {},
+  "advanced.cards.update": {
+    "cardId": "1700000000002",
+    "patch": {
+      "customData": "{\"source\":\"vocabulary\"}"
+    }
+  },
+  "advanced.reviews.import": {
+    "reviews": [
+      {
+        "id": "1791633600000",
+        "cardId": "1700000000002",
+        "rating": "good",
+        "interval": {
+          "value": 10,
+          "unit": "days"
+        },
+        "previousInterval": {
+          "value": 5,
+          "unit": "days"
+        },
+        "factor": {
+          "encoding": "legacySm2EasePermille",
+          "value": 2500
+        },
+        "elapsedMs": 2500,
+        "kind": "review"
+      }
+    ]
+  },
+  "operations.get": {
+    "operationId": "replace-with-operation-id"
+  },
+  "operations.cancel": {
+    "operationId": "replace-with-operation-id"
+  }
+}
