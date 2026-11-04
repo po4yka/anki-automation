@@ -1,0 +1,31 @@
+# Python and local tools
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.ty_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+build/
+dist/
+
+# Private input, generated exports, and credentials
+data/
+exports/
+.env
+.env.*
+!.env.example
+*.apkg
+*.colpkg
+*.anki2
+*.anki21
+*.anki21b
+
+# Editors and host files
+.DS_Store
+.idea/
+.vscode/
