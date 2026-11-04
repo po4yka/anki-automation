@@ -12,7 +12,7 @@ repos:
         name: Ruff format check
         entry: uv run --locked ruff format --check
         language: system
-        types_or: [python, pyi]
+        types_or: [python, pyi, markdown]
       - id: ty
         name: Type check
         entry: uv run --locked ty check

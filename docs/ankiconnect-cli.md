@@ -206,8 +206,11 @@ for page in client.iter_pages("notes.search", {"query": "deck:Languages", "limit
 # Explicit collection write; native resources and fields must exist.
 created = client.call(
     "notes.create",
-    {"deck": {"name": "Languages::English"}, "noteType": {"name": "Basic"},
-     "fields": {"Front": "cat", "Back": "кот"}},
+    {
+        "deck": {"name": "Languages::English"},
+        "noteType": {"name": "Basic"},
+        "fields": {"Front": "cat", "Back": "кот"},
+    },
     apply=True,
 )
 ```
