@@ -1,0 +1,4 @@
+interface:
+  display_name: "Подготовка карточек"
+  short_description: "Проверенные черновики карточек по учебному материалу"
+  default_prompt: "Используй $anki-card-authoring для подготовки черновиков карточек."

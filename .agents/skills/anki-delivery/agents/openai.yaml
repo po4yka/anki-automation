@@ -1,0 +1,4 @@
+interface:
+  display_name: "Доставка в Anki"
+  short_description: "Валидация, экспорт и предпросмотр карточек Anki"
+  default_prompt: "Используй $anki-delivery для предпросмотра пакета без записи в Anki."
