@@ -14,6 +14,7 @@ from anki_automation.cards import CardError, import_params, load_cards, render_t
 from anki_automation.contract import ContractError
 from anki_automation.errors import OperationTimeout
 from anki_automation.replika import add_replika_parser, run_replika
+from anki_automation.templates import add_templates_parser, run_templates
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -38,11 +39,12 @@ def _parser() -> argparse.ArgumentParser:
     anki.add_argument("--timeout", type=float, default=10.0)
     add_api_parser(commands)
     add_replika_parser(commands)
+    add_templates_parser(commands)
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    """Return zero only after validation, export, preview, or confirmed import."""
+    """Return zero only after validation, export, preview, a clean check, or confirmed write."""
     args = _parser().parse_args(argv)
     try:
         cards = (
@@ -71,6 +73,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 result = run_api(args)
             case "replika-build" | "replika-validate" | "replika-export":
                 result = run_replika(args)
+            case "templates":
+                result = run_templates(args)
             case _:
                 raise AssertionError("argparse accepted an unknown command")
     except (CardError, ContractError, AnkiError, OSError, UnicodeError) as error:
@@ -78,4 +82,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(json.dumps(details, ensure_ascii=True), file=sys.stderr)
         return 3 if isinstance(error, OperationTimeout) else 1
     print(json.dumps(result, ensure_ascii=False))
-    return 0
+    # Drift found in check mode is a failed check, not an application error.
+    drift = args.command == "templates" and isinstance(result, dict) and not result["in_sync"]
+    return 1 if drift else 0

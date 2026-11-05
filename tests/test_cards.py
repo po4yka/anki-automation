@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from anki_automation.cards import (
+    NOTE_TYPE,
     CardError,
     card_from_record,
     check_deck,
@@ -102,16 +103,53 @@ def test_escape_source_text_and_preserve_line_breaks() -> None:
     )
     text = render_tsv([card], "Languages::English")
     assert text.startswith(
-        "#separator:Tab\n#html:true\n#notetype:Basic\n#deck:Languages::English\n"
+        "#separator:Tab\n#html:true\n#notetype:Реплика · Значение\n#deck:Languages::English\n"
     )
-    assert "#tags column:3\n#columns:Front\tBack\tTags\n" in text
+    assert "#tags column:4\n#columns:Front\tBack\tSource\tTags\n" in text
     rows = list(csv.reader(io.StringIO("\n".join(text.splitlines()[6:])), delimiter="\t"))
-    assert rows == [[card.fields()["Front"], card.fields()["Back"], "lang::en"]]
+    fields = card.fields()
+    assert rows == [[fields["Front"], fields["Back"], fields["Source"], "lang::en"]]
     assert rows[0][0].startswith("<span>#&lt;script&gt;")
     assert "&amp; two<br>three" in rows[0][1]
     assert "<script>" not in text
     assert "<img " not in text
-    assert "Source: &lt;https://example.org&gt;" in text
+    assert rows[0][2] == "&lt;https://example.org&gt;"
+    assert "Source:" not in rows[0][1]
+
+
+@pytest.mark.parametrize(
+    "source, expected",
+    [
+        (
+            "Strength & Fitness — https://example.org/guide?a=1&b=2",
+            '<a href="https://example.org/guide?a=1&amp;b=2">Strength &amp; Fitness</a>',
+        ),
+        ("https://example.org/guide", '<a href="https://example.org/guide">example.org</a>'),
+        ("Local lesson", "Local lesson"),
+        ("Unsafe — javascript:alert(1)", "Unsafe — javascript:alert(1)"),
+        ("Malformed — https://[host", "Malformed — https://[host"),
+        (
+            'Injected — https://example.org/"onclick="alert(1)',
+            "Injected — https://example.org/&quot;onclick=&quot;alert(1)",
+        ),
+    ],
+)
+def test_render_source_links(source: str, expected: str) -> None:
+    card = card_from_record({"term": "squat", "meaning": "приседание", "source": source})
+    assert card.fields() == {
+        "Front": "<span>squat</span>",
+        "Back": "<div>приседание</div>",
+        "Source": expected,
+    }
+
+
+def test_source_field_is_empty_without_source() -> None:
+    card = card_from_record({"term": "squat", "meaning": "приседание", "example": "Squat low."})
+    assert card.fields() == {
+        "Front": "<span>squat</span>",
+        "Back": "<div>приседание</div><div><i>Squat low.</i></div>",
+        "Source": "",
+    }
 
 
 @pytest.mark.parametrize("deck", ["", " ", "a\nb", "a\tb", "a::", "::a", "a:: ::b"])
@@ -123,12 +161,13 @@ def test_reject_invalid_decks(deck: str) -> None:
 def test_import_and_export_use_identical_fields() -> None:
     card = card_from_record({"term": "cat", "meaning": "кот"})
     params = import_params([card], " Languages::English ")
+    assert NOTE_TYPE == "Реплика · Значение"
     assert params == {
         "atomic": True,
         "notes": [
             {
                 "deck": {"name": "Languages::English"},
-                "noteType": {"name": "Basic"},
+                "noteType": {"name": NOTE_TYPE},
                 "fields": card.fields(),
                 "tags": [],
                 "duplicates": {

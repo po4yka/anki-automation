@@ -8,6 +8,10 @@ import re
 import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import urlsplit
+
+NOTE_TYPE = "Реплика · Значение"
+FIELDS = ("Front", "Back", "Source")
 
 
 class CardError(ValueError):
@@ -25,18 +29,33 @@ class Card:
     tags: tuple[str, ...] = ()
 
     def fields(self) -> dict[str, str]:
-        """Render escaped HTML for the Basic note type."""
+        """Render escaped HTML for the NOTE_TYPE fields."""
         parts = [f"<div>{_html(self.meaning)}</div>"]
         if self.example:
             parts.append(f"<div><i>{_html(self.example)}</i></div>")
-        if self.source:
-            parts.append(f"<div>Source: {_html(self.source)}</div>")
         # The wrapper also keeps a leading '#' from becoming a TSV comment.
-        return {"Front": f"<span>{_html(self.term)}</span>", "Back": "".join(parts)}
+        return {
+            "Front": f"<span>{_html(self.term)}</span>",
+            "Back": "".join(parts),
+            "Source": _source_html(self.source) if self.source else "",
+        }
 
 
 def _html(value: str) -> str:
     return html.escape(value).replace("\n", "<br>")
+
+
+def _source_html(source: str) -> str:
+    title, _, url = source.rpartition(" — ")
+    if re.search(r'[\s\\<>"]', url):
+        return _html(source)
+    try:
+        parsed = urlsplit(url)
+    except ValueError:
+        return _html(source)
+    if parsed.scheme not in {"http", "https"} or not parsed.hostname or parsed.username is not None:
+        return _html(source)
+    return f'<a href="{html.escape(url)}">{_html(title or parsed.hostname)}</a>'
 
 
 def _text(value: object, field: str, *, required: bool = False) -> str:
@@ -119,12 +138,12 @@ def render_tsv(cards: list[Card], deck: str) -> str:
     """Create an Anki text import with explicit headers and a tags column."""
     deck = check_deck(deck)
     output = io.StringIO(newline="")
-    output.write(f"#separator:Tab\n#html:true\n#notetype:Basic\n#deck:{deck}\n")
-    output.write("#tags column:3\n#columns:Front\tBack\tTags\n")
+    output.write(f"#separator:Tab\n#html:true\n#notetype:{NOTE_TYPE}\n#deck:{deck}\n")
+    output.write(f"#tags column:{len(FIELDS) + 1}\n#columns:{chr(9).join(FIELDS)}\tTags\n")
     writer = csv.writer(output, delimiter="\t", lineterminator="\n")
     for card in cards:
         fields = card.fields()
-        writer.writerow((fields["Front"], fields["Back"], " ".join(card.tags)))
+        writer.writerow((*(fields[name] for name in FIELDS), " ".join(card.tags)))
     return output.getvalue()
 
 
@@ -136,7 +155,7 @@ def import_params(cards: list[Card], deck: str) -> dict[str, object]:
         "notes": [
             {
                 "deck": {"name": deck},
-                "noteType": {"name": "Basic"},
+                "noteType": {"name": NOTE_TYPE},
                 "fields": card.fields(),
                 "tags": list(card.tags),
                 "duplicates": {"allow": False, "scope": "deck", "deck": {"name": deck}},

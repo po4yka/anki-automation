@@ -20,7 +20,7 @@ uv run --locked anki-automation export examples/cards.jsonl \
 ```
 
 Open the TSV file with Anki's text import. It includes UTF-8 text, HTML settings,
-the `Basic` note type, the deck name, and a tags column. Anki's import screen controls
+the `Реплика · Значение` note type, the deck name, and a tags column. Anki's import screen controls
 whether existing notes are updated. Review those settings before you confirm.
 Export creates parent directories and refuses to replace an existing file.
 
@@ -37,7 +37,7 @@ Save one JSON object per line in a UTF-8 `.jsonl` file:
 | `term` | Required non-empty expression or question. Becomes `Front`. |
 | `meaning` | Required non-empty meaning or answer. Starts `Back`. |
 | `example` | Optional example text. Added to `Back`. |
-| `source` | Optional source title, URL, or citation. Added as text to `Back`. |
+| `source` | Optional source title, URL, or citation. Becomes `Source`; templates show it in a collapsed block. Use `Title — https://example.org/page` to make the title a clickable link. A bare HTTP(S) URL uses the hostname as its link text. |
 | `tags` | Optional array of tags. Use letters, digits, `_`, `:`, or `-`. |
 
 Input fields contain plain text. The renderer escapes HTML and preserves line
@@ -76,8 +76,9 @@ add-on supports; the packaged catalog can be newer than the installed add-on.
 
 Use Anki Desktop **26.08 or later** and a current
 [Anki-Connect](https://git.sr.ht/~foosoft/anki-connect) add-on with API v1.
-Create the target deck and a note type named `Basic` with fields named `Front`
-and `Back`. Names are exact; localized note type names must be changed in Anki.
+Create the target deck and the `Реплика · Значение` note type with fields named `Front`,
+`Back`, and `Source`. `templates --apply` creates the note type from the vault
+sources. Names are exact; localized note type names must be changed in Anki.
 Open the intended profile and close its note editors.
 
 ```sh
@@ -104,6 +105,28 @@ you run the import again: the server may have committed the batch.
 Commands print JSON to stdout. Application errors print JSON to stderr and return
 exit code 1. Argument errors return exit code 2. Preview output contains card text;
 store it with the same care as the source file.
+
+## Template sources
+
+Note type layouts live as JSON files (the `noteTypes.create` schema, one file per
+note type, file name equal to the type name) next to one shared `replika.css`.
+Compare them with the open profile, then apply:
+
+```sh
+uv run --locked anki-automation templates '/path/to/vault/40 Anki/Templates'
+uv run --locked anki-automation templates '/path/to/vault/40 Anki/Templates' --apply
+```
+
+Only settings a source states are managed; omitted ones keep their Anki values.
+The check makes only reads in one
+collection session and exits with code 1 when a field setting, template, the CSS,
+the sort field, or a LaTeX setting differs, or a note type is missing. `--apply`
+creates missing note types and updates those settings in the same session, so a
+profile switch fails with `staleSession`. It refuses to write anything when a field
+list, note kind, or template name differs: such a change needs a structural
+migration and a full sync. Writes are never retried. If a write fails, the error
+JSON lists the steps already confirmed for each note type under
+`result.applied_before_failure`; run the check again before you continue.
 
 ## Development
 
