@@ -107,6 +107,10 @@ store it with the same care as the source file.
 
 ## Development
 
+For the three Replika types, use `replika-validate` to check Obsidian JSONL and
+`replika-export` to build an Anki package and standalone HTML preview. See
+[Replika source format and demo build](docs/replika.md).
+
 ```sh
 uv sync --locked
 uv run --locked ruff check .

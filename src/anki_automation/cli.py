@@ -13,6 +13,7 @@ from anki_automation.api_cli import add_api_parser, run_api
 from anki_automation.cards import CardError, import_params, load_cards, render_tsv
 from anki_automation.contract import ContractError
 from anki_automation.errors import OperationTimeout
+from anki_automation.replika import add_replika_parser, run_replika
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -36,6 +37,7 @@ def _parser() -> argparse.ArgumentParser:
     anki.add_argument("--port", type=int, default=8765)
     anki.add_argument("--timeout", type=float, default=10.0)
     add_api_parser(commands)
+    add_replika_parser(commands)
     return parser
 
 
@@ -43,7 +45,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     """Return zero only after validation, export, preview, or confirmed import."""
     args = _parser().parse_args(argv)
     try:
-        cards = load_cards(args.input) if args.command != "anki" else []
+        cards = (
+            load_cards(args.input) if args.command in {"validate", "export", "anki-import"} else []
+        )
         match args.command:
             case "validate":
                 result = {"cards": len(cards)}
@@ -65,6 +69,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                     result = {"apply": False, "method": "notes.createMany", "params": params}
             case "anki":
                 result = run_api(args)
+            case "replika-build" | "replika-validate" | "replika-export":
+                result = run_replika(args)
             case _:
                 raise AssertionError("argparse accepted an unknown command")
     except (CardError, ContractError, AnkiError, OSError, UnicodeError) as error:
