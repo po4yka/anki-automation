@@ -15,6 +15,7 @@ from anki_automation.cards import (
     import_params,
     load_cards,
     render_tsv,
+    speech_text,
 )
 
 
@@ -105,10 +106,13 @@ def test_escape_source_text_and_preserve_line_breaks() -> None:
     assert text.startswith(
         "#separator:Tab\n#html:true\n#notetype:Replika · Meaning\n#deck:Languages::English\n"
     )
-    assert "#tags column:4\n#columns:Front\tBack\tSource\tTags\n" in text
+    assert "#tags column:5\n#columns:Front\tBack\tSource\tSpeech\tTags\n" in text
     rows = list(csv.reader(io.StringIO("\n".join(text.splitlines()[6:])), delimiter="\t"))
     fields = card.fields()
-    assert rows == [[fields["Front"], fields["Back"], fields["Source"], "lang::en"]]
+    assert rows == [
+        [fields["Front"], fields["Back"], fields["Source"], fields["Speech"], "lang::en"]
+    ]
+    assert rows[0][3].startswith("#&lt;script&gt;")
     assert rows[0][0].startswith("<span>#&lt;script&gt;")
     assert "&amp; two<br>three" in rows[0][1]
     assert "<script>" not in text
@@ -140,6 +144,7 @@ def test_render_source_links(source: str, expected: str) -> None:
         "Front": "<span>squat</span>",
         "Back": "<div>приседание</div>",
         "Source": expected,
+        "Speech": "squat",
     }
 
 
@@ -149,7 +154,29 @@ def test_source_field_is_empty_without_source() -> None:
         "Front": "<span>squat</span>",
         "Back": "<div>приседание</div><div><i>Squat low.</i></div>",
         "Source": "",
+        "Speech": "squat",
     }
+
+
+@pytest.mark.parametrize(
+    "term, expected",
+    [
+        ("Workout / training session", "Workout / training session"),
+        ("RPE 7. Что оценивает RPE?", "RPE 7."),
+        ("Superset: press and row. Как идут упражнения?", "Superset: press and row."),
+        ("AMRAP 10. AMRAP — это сколько?", "AMRAP 10."),
+        ("Pause at the bottom.\n Что нужно сделать?", "Pause at the bottom."),
+        ("Is it over? Stop! Что сказал тренер?", "Is it over? Stop!"),
+        ('"Stop!" Что сказал тренер?', '"Stop!"'),
+        ("(Rest.) Что делать?", "(Rest.)"),
+        ("Translate: отжимание", ""),
+        ("Stop!Что это?", ""),
+        ("Ты сгибаешь локоть. Flexion или extension?", ""),
+        ("A single-arm row выполняют одной рукой. Unilateral?", ""),
+    ],
+)
+def test_speech_is_the_text_before_the_first_russian_sentence(term: str, expected: str) -> None:
+    assert speech_text(term) == expected
 
 
 @pytest.mark.parametrize("deck", ["", " ", "a\nb", "a\tb", "a::", "::a", "a:: ::b"])

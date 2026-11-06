@@ -34,7 +34,7 @@ Save one JSON object per line in a UTF-8 `.jsonl` file:
 
 | Field | Contract |
 | --- | --- |
-| `term` | Required non-empty expression or question. Becomes `Front`. |
+| `term` | Required non-empty expression or question. Becomes `Front`. The sentences before the first Russian one also become `Speech`, which the template reads aloud with Anki text-to-speech. A term that opens in Russian leaves `Speech` empty. |
 | `meaning` | Required non-empty meaning or answer. Starts `Back`. |
 | `example` | Optional example text. Added to `Back`. |
 | `source` | Optional source title, URL, or citation. Becomes `Source`; templates show it in a collapsed block. Use `Title — https://example.org/page` to make the title a clickable link. A bare HTTP(S) URL uses the hostname as its link text. |
@@ -77,7 +77,7 @@ add-on supports; the packaged catalog can be newer than the installed add-on.
 Use Anki Desktop **26.08 or later** and a current
 [Anki-Connect](https://git.sr.ht/~foosoft/anki-connect) add-on with API v1.
 Create the target deck and the `Replika · Meaning` note type with fields named `Front`,
-`Back`, and `Source`. `templates --apply` creates the note type from the vault
+`Back`, `Source`, and `Speech`. `templates --apply` creates the note type from the vault
 sources. Names are exact; localized note type names must be changed in Anki.
 Open the intended profile and close its note editors.
 

@@ -11,7 +11,9 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 NOTE_TYPE = "Replika · Meaning"
-FIELDS = ("Front", "Back", "Source")
+FIELDS = ("Front", "Back", "Source", "Speech")
+_CYRILLIC = re.compile(r"[\u0400-\u04FF]")
+_SENTENCE_END = re.compile(r"""[.!?…]["'\u00bb\u201d\u2019)\]]*\s+|\n""")
 
 
 class CardError(ValueError):
@@ -38,7 +40,21 @@ class Card:
             "Front": f"<span>{_html(self.term)}</span>",
             "Back": "".join(parts),
             "Source": _source_html(self.source) if self.source else "",
+            "Speech": _html(speech_text(self.term)),
         }
+
+
+def speech_text(term: str) -> str:
+    """Return the leading sentences before the first Russian one, for text-to-speech.
+
+    A prompt that opens in Russian gives an empty string, so its card stays silent.
+    """
+    # shortcut: assumes Russian explanations, add a source key when another language needs it.
+    russian = _CYRILLIC.search(term)
+    if russian is None:
+        return term
+    ends = [match.end() for match in _SENTENCE_END.finditer(term, 0, russian.start())]
+    return term[: ends[-1]].strip() if ends else ""
 
 
 def _html(value: str) -> str:
