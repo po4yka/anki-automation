@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlsplit
 
-NOTE_TYPE = "Реплика · Значение"
+NOTE_TYPE = "Replika · Meaning"
 FIELDS = ("Front", "Back", "Source")
 
 

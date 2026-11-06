@@ -28,9 +28,9 @@ the note type for the task and the category for the destination deck.
 
 | Type | Anki note type | Required fields |
 | --- | --- | --- |
-| `context` | Реплика · Контекст | `Prompt`, `Answer`, `Source` |
-| `cloze` | Реплика · Пропуск | `Text` with one `{{c1::answer}}`, `Source` |
-| `recall` | Реплика · Точный ответ | `Prompt`, one-line `Answer`, `Source` |
+| `context` | Replika · Context | `Prompt`, `Answer`, `Source` |
+| `cloze` | Replika · Cloze | `Text` with one `{{c1::answer}}`, `Source` |
+| `recall` | Replika · Recall | `Prompt`, one-line `Answer`, `Source` |
 
 Generate a new `key` for each new note. Keep it when revising the note. The package
 uses this value for the Anki GUID and fills the hidden `Key` field. Use

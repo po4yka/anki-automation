@@ -20,7 +20,7 @@ uv run --locked anki-automation export examples/cards.jsonl \
 ```
 
 Open the TSV file with Anki's text import. It includes UTF-8 text, HTML settings,
-the `Реплика · Значение` note type, the deck name, and a tags column. Anki's import screen controls
+the `Replika · Meaning` note type, the deck name, and a tags column. Anki's import screen controls
 whether existing notes are updated. Review those settings before you confirm.
 Export creates parent directories and refuses to replace an existing file.
 
@@ -76,7 +76,7 @@ add-on supports; the packaged catalog can be newer than the installed add-on.
 
 Use Anki Desktop **26.08 or later** and a current
 [Anki-Connect](https://git.sr.ht/~foosoft/anki-connect) add-on with API v1.
-Create the target deck and the `Реплика · Значение` note type with fields named `Front`,
+Create the target deck and the `Replika · Meaning` note type with fields named `Front`,
 `Back`, and `Source`. `templates --apply` creates the note type from the vault
 sources. Names are exact; localized note type names must be changed in Anki.
 Open the intended profile and close its note editors.

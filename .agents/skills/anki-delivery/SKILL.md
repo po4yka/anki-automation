@@ -17,7 +17,7 @@ Confirm what the user authorized: local export, deck creation, import, deletion,
 
 ## Validate, export, or preview
 
-For `Реплика · Значение`, use the actual input path and deck name in these commands:
+For `Replika · Meaning`, use the actual input path and deck name in these commands:
 
 ```sh
 uv run --locked anki-automation validate "$batch_path"
@@ -30,7 +30,7 @@ For Replika, follow [the package workflow](../../../docs/replika.md#prepare-a-pa
 
 ## Apply only the authorized operation
 
-Before any collection write, run the read-only `templates` check on `40 Anki/Templates` in languages-vault. If it reports drift, stop and report it; `templates --apply` is a collection write and needs its own explicit user authority. For a `Реплика · Значение` collection write, check the running add-on's capabilities, active collection, and the required deck and `Реплика · Значение` note type using documented read commands. Inspect their current CLI help or schema rather than guessing API flags. Show the exact effect and resolve an ambiguous active profile before writing.
+Before any collection write, run the read-only `templates` check on `40 Anki/Templates` in languages-vault. If it reports drift, stop and report it; `templates --apply` is a collection write and needs its own explicit user authority. For a `Replika · Meaning` collection write, check the running add-on's capabilities, active collection, and the required deck and `Replika · Meaning` note type using documented read commands. Inspect their current CLI help or schema rather than guessing API flags. Show the exact effect and resolve an ambiguous active profile before writing.
 
 When the user has explicitly authorized importing the current reviewed batch version into that collection, run the same `anki-import` command with `--apply`. If the records change after the preview or review, return to the revision workflow before writing. Keep atomic imports, session checks, and duplicate rejection. The current import flow creates notes; it does not update existing ones. Do not delete and recreate notes to simulate an update.
 

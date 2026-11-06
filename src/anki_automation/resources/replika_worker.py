@@ -36,6 +36,7 @@ QUERY = f'deck:"{DECK}"'
 PLAY = re.compile(r"\[anki:play:[qa]:0\]")
 IMAGE = re.compile(r"""<img\b(?:[^"'<>]|"[^"]*"|'[^']*')*>""", re.IGNORECASE)
 LABELS = {"words": "Слова", "grammar": "Грамматика", "slang": "Сленг и сокращения"}
+MODE_LABELS = {"context": "Контекст", "cloze": "Пропуск", "recall": "Точный ответ"}
 
 
 def load(collection: Any, path: Path) -> None:
@@ -174,7 +175,7 @@ def preview(collection: Any, css: str, ids: list[int]) -> str:
             "",
         )
         caption = f" <span>· {category}</span>" if category else ""
-        label = escape(name.removeprefix("Реплика · "))
+        label = escape(MODE_LABELS[MODES[name]])
         examples.append(f"""<section id="demo-{i}" class="demo-example"
          aria-labelledby="demo-title-{i}">
   <h2 id="demo-title-{i}">{i}. {label}{caption}</h2>

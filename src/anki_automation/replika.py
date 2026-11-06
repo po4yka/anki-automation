@@ -17,9 +17,9 @@ from anki_automation.cards import CardError
 
 DECK = "Реплика — демо"
 MODES = {
-    "Реплика · Контекст": "context",
-    "Реплика · Пропуск": "cloze",
-    "Реплика · Точный ответ": "recall",
+    "Replika · Context": "context",
+    "Replika · Cloze": "cloze",
+    "Replika · Recall": "recall",
 }
 PACKAGE = f"{DECK}.apkg"
 PREVIEW = "Preview.html"

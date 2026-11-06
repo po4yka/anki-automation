@@ -103,7 +103,7 @@ def test_escape_source_text_and_preserve_line_breaks() -> None:
     )
     text = render_tsv([card], "Languages::English")
     assert text.startswith(
-        "#separator:Tab\n#html:true\n#notetype:Реплика · Значение\n#deck:Languages::English\n"
+        "#separator:Tab\n#html:true\n#notetype:Replika · Meaning\n#deck:Languages::English\n"
     )
     assert "#tags column:4\n#columns:Front\tBack\tSource\tTags\n" in text
     rows = list(csv.reader(io.StringIO("\n".join(text.splitlines()[6:])), delimiter="\t"))
@@ -161,7 +161,7 @@ def test_reject_invalid_decks(deck: str) -> None:
 def test_import_and_export_use_identical_fields() -> None:
     card = card_from_record({"term": "cat", "meaning": "кот"})
     params = import_params([card], " Languages::English ")
-    assert NOTE_TYPE == "Реплика · Значение"
+    assert NOTE_TYPE == "Replika · Meaning"
     assert params == {
         "atomic": True,
         "notes": [
