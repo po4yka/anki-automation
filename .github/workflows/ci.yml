@@ -97,5 +97,5 @@ jobs:
           persist-credentials: false
       - uses: trufflesecurity/trufflehog@4ef51f69ca6347aaa76a5e64a87eac9c0c909f71 # v3.100.1
         with:
-          version: "3.99.9"
+          version: "3.100.1"
           extra_args: --results=verified,unknown
